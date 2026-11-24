@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>B站评分章节助手</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>B站评分章节助手</h1>
+      <span id="pageStatus" class="badge badge-warn">未检测到编辑器</span>
+    </header>
+
+    <div id="quickJumpBar" class="quick-jump hidden">
+      <span>当前在视频播放页，先跳转编辑器：</span>
+      <div class="quick-jump-btns">
+        <button id="jumpRatingBtn" class="jump-btn" type="button">打开评分编辑器</button>
+        <button id="jumpChapterBtn" class="jump-btn" type="button">打开章节编辑器</button>
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button id="tabRatingBtn" class="tab-btn active" type="button" data-tab="rating">评分弹幕</button>
+      <button id="tabChapterBtn" class="tab-btn" type="button" data-tab="chapter">章节导航条</button>
+    </nav>
+
+    <!-- ========== Tab 1: 评分弹幕 ========== -->
+    <div id="panelRating" class="tab-panel active">
+      <section class="input-section">
+        <div class="label-row">
+          <label for="tracklistInput">粘贴置顶评论 / 歌单（支持单行或两行换行）</label>
+          <button id="syncToChapterBtn" class="link-btn" type="button">同步到章节</button>
+        </div>
+        <textarea
+          id="tracklistInput"
+          rows="4"
+          placeholder="直接粘贴置顶评论，例如：&#10;1. Wake Me Up 唤醒我&#10;00:00&#10;2. Cry For Me (哭泣)&#10;05:08"
+        ></textarea>
+      </section>
+
+      <section class="options">
+        <div class="lang-row">
+          <span>标题语言（上限 12 字）：</span>
+          <div class="lang-radios">
+            <label><input type="radio" name="ratingLang" value="zh" checked /> 中文</label>
+            <label><input type="radio" name="ratingLang" value="en" /> 英文</label>
+          </div>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="addAlbumRating" checked />
+          <span>00:00:05 自动添加「专辑评分」</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="avoidOverlap" checked />
+          <span>第 1 首歌若在 00:00~00:10 自动顺延至 00:00:11</span>
+        </label>
+      </section>
+
+      <section class="output-block">
+        <div class="label-row">
+          <label for="ratingPreviewOutput">评分弹幕预览（可微调，每行 HH:MM:SS 标题）</label>
+        </div>
+        <textarea id="ratingPreviewOutput" rows="5" placeholder="整理后的评分弹幕会显示在这里..."></textarea>
+        <div id="parseSummary" class="summary">预计添加 0 条评分弹幕</div>
+      </section>
+
+      <section class="actions">
+        <button id="startBtn" class="btn btn-primary" type="button">一键批量添加评分</button>
+        <button id="stopBtn" class="btn btn-secondary" type="button" disabled>停止</button>
+      </section>
+
+      <section class="log-section">
+        <div class="progress-bar-wrap">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div id="logBox" class="log-box">请先打开 B 站「弹幕配置 / 评分弹幕」编辑器页面。</div>
+      </section>
+    </div>
+
+    <!-- ========== Tab 2: 章节导航条 ========== -->
+    <div id="panelChapter" class="tab-panel">
+      <section class="input-section">
+        <div class="label-row">
+          <label for="chapterSourceInput">粘贴置顶评论 / 歌单（支持单行或两行换行）</label>
+          <button id="syncToRatingBtn" class="link-btn" type="button">同步到评分</button>
+        </div>
+        <textarea
+          id="chapterSourceInput"
+          rows="4"
+          placeholder="直接粘贴置顶评论，例如：&#10;1. Wake Me Up 唤醒我&#10;00:00&#10;2. Cry For Me (哭泣)&#10;05:08"
+        ></textarea>
+      </section>
+
+      <section class="options">
+        <div class="lang-row">
+          <span>章节语言（上限 16 字）：</span>
+          <div class="lang-radios">
+            <label><input type="radio" name="chapterLang" value="zh" checked /> 中文</label>
+            <label><input type="radio" name="chapterLang" value="en" /> 英文</label>
+          </div>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="autoCompressTitle" checked />
+          <span>超 16 字自动精简（去版本后缀/副标题并截断）</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="autoSaveChapter" checked />
+          <span>转换章节列表后自动点击「保存」</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="keepDefaultExpand" checked />
+          <span>勾选「播放器默认展示章节」</span>
+        </label>
+      </section>
+
+      <section class="output-block">
+        <div class="label-row">
+          <label for="chapterOutput">章节文本预览（可手动微调，每行 HH:MM:SS 标题）</label>
+          <button id="copyChapterBtn" class="link-btn" type="button">复制章节</button>
+        </div>
+        <textarea id="chapterOutput" rows="5" placeholder="整理后的章节文本会显示在这里..."></textarea>
+        <div id="chapterCheckSummary" class="summary">章数 0/10 · 最长标题 0 字 · 最小间隔 0 秒</div>
+      </section>
+
+      <section class="actions">
+        <button id="applyChapterBtn" class="btn btn-primary" type="button">一键填入导航条</button>
+      </section>
+
+      <div id="chapterLogBox" class="log-box">请先从视频右下角「章节管理」打开章节编辑器（ChapterSetting）。</div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

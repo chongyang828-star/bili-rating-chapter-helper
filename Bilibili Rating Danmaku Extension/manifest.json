@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "B站评分章节助手",
+  "version": "1.1.0",
+  "description": "在 B 站 UP 主编辑器中，粘贴置顶评论即可一键批量添加五星评分弹幕与视频章节导航条。",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.bilibili.com/video/*",
+    "https://www.bilibili.com/web/player/*",
+    "https://member.bilibili.com/platform/upload-manager/article/PlayerSetting*",
+    "https://member.bilibili.com/platform/upload-manager/article/ChapterSetting*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "B站评分章节助手"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.bilibili.com/web/player/*",
+        "https://www.bilibili.com/video/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ]
+}
